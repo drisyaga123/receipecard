@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Pasta Recipe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+           
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url(bg.jpg);
+            background-size: cover;
+        }
+
+        .recipe-card {
+            width: 70%;
+            
+            max-width: 900px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .image-column {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column; /* Allows stacking the pasta image and extra images */
+            align-items: center;
+        }
+
+        .image-column img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .extra-images {
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .extra-images img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+        }
+
+        .content-column {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .recipe-info button {
+            display: block;
+            width: 500px;
+            padding: 10px;
+            margin: 10px auto;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .recipe-info button:hover {
+            background-color: #808080;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        ul, ol {
+            text-align: left;
+            padding-left: 20px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        .progress-container {
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #cb4242;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+       
+
+        .prep-info {
+            margin: 0 auto;
+        }
+
+        ul li:hover, ol li:hover {
+            color: #ff6b6b;
+            transition: color 0.3s ease;
+        }
+       
+        @media (max-width: 768px) {
+            .recipe-card {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .image-column, .content-column {
+                width: 100%;
+            }
+
+            .recipe-info button {
+                font-size: 14px;
+            }
+        }
+        /* Print styles */
+        @media print {
+            body {
+                background-image: none;
+            }
+            .recipe-card {
+                box-shadow: none;
+                width: 100%;
+                padding: 10px;
+            }
+            .recipe-info button {
+                display: none;
+            }
+            #timer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recipe-card">
+        <div class="image-column">
+            <img src="pasta.jpg" alt="Vegetarian Pasta" height="220px">
+            <div class="extra-images">
+                <img src="pasta1.jpg" alt="Ingredient 1">
+                <img src="pasta2.jpg" alt="Ingredient 2">
+                <img src="pasta3.jpg" alt="Ingredient 3">
+            </div>
+        </div>
+
+        <div class="content-column">
+            <center><h1>VEG PASTA</h1></center>
+            <div class="recipe-info">
+                <button id="toggle-ingredients">Show Ingredients</button>
+                <ul id="ingredients-list" class="hidden">
+                    <li>200g pasta (penne, fusilli, or spaghetti)</li>
+                    <li>1 tbsp olive oil</li>
+                    <li>1 onion, chopped</li>
+                    <li>2 garlic cloves, minced</li>
+                    <li>1 red bell pepper, sliced</li>
+                    <li>1 zucchini, sliced</li>
+                    <li>1 cup cherry tomatoes, halved</li>
+                    <li>1/2 cup tomato sauce</li>
+                    <li>Salt and pepper to taste</li>
+                    <li>Grated Parmesan cheese (optional)</li>
+                    <li>Fresh basil for garnish</li>
+                </ul>
+
+                <button id="toggle-steps">Show Steps</button>
+                <ol id="steps-list" class="hidden">
+                    <li>Cook the pasta according to the package instructions. Drain and set aside.</li>
+                    <li>Heat olive oil in a large pan over medium heat.</li>
+                    <li>Add the chopped onion and sauté until softened, about 3-4 minutes.</li>
+                    <li>Add minced garlic and cook for another minute.</li>
+                    <li>Stir in the red bell pepper and zucchini. Cook until vegetables are tender, about 5-7 minutes.</li>
+                    <li>Add cherry tomatoes and tomato sauce. Stir well and season with salt and pepper to taste.</li>
+                    <li>Toss the cooked pasta into the sauce and mix until well combined.</li>
+                    <li>Top with grated Parmesan and fresh basil, if desired. Serve hot.</li>
+
+                    <p>Preparation time: 30 minutes</p>
+                    <p>Serving size: 2-3</p>
+                </ol>
+                <button id="print-recipe">Print Recipe</button>
+                <button id="start-cooking">Start Cooking</button>
+                <div class="progress-container">
+                    <div id="progress-bar"></div>
+                    
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleIngredientsButton = document.getElementById('toggle-ingredients');
+            const ingredientsList = document.getElementById('ingredients-list');
+            const extraImages = document.querySelector('.extra-images'); 
+
+            toggleIngredientsButton.addEventListener('click', function () {
+                if (ingredientsList.classList.contains('hidden')) {
+                    ingredientsList.classList.remove('hidden');
+                    extraImages.style.display = 'flex'; 
+                    toggleIngredientsButton.textContent = "Hide Ingredients";
+                } else {
+                    ingredientsList.classList.add('hidden');
+                    if (!stepsList.classList.contains('hidden')) {
+                        extraImages.style.display = 'flex'; 
+                    } else {
+                        extraImages.style.display = 'none'; 
+                    }
+                    toggleIngredientsButton.textContent = "Show Ingredients";
+                }
+            });
+
+            const toggleStepsButton = document.getElementById('toggle-steps');
+            const stepsList = document.getElementById('steps-list');
+
+            toggleStepsButton.addEventListener('click', function () {
+                if (stepsList.classList.contains('hidden')) {
+                    stepsList.classList.remove('hidden');
+                    extraImages.style.display = 'flex'; 
+                    toggleStepsButton.textContent = "Hide Steps";
+                } else {
+                    stepsList.classList.add('hidden');
+                    if (!ingredientsList.classList.contains('hidden')) { 
+                        extraImages.style.display = 'flex'; 
+                    } else {
+                        extraImages.style.display = 'none'; 
+                    }
+                    toggleStepsButton.textContent = "Show Steps";
+                }
+            });
+
+            
+            const startCookingButton = document.getElementById('start-cooking');
+            const steps = stepsList.querySelectorAll('li');
+            let currentStep = 0;
+
+            startCookingButton.addEventListener('click', function () {
+                if (currentStep < steps.length) {
+                    steps[currentStep].style.color = '#808080';
+                    currentStep++;
+                    const progressPercent = (currentStep / steps.length) * 100;
+                    document.getElementById('progress-bar').style.width = progressPercent + '%';
+                }
+            });
+        });
+        
+        
+          const printRecipeButton = document.getElementById('print-recipe');
+            printRecipeButton.addEventListener('click', function () {
+                window.print();
+            });
+    
+    </script>
+</body>
+</html>
