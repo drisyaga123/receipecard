@@ -39,7 +39,7 @@
             flex: 1;
             min-width: 250px;
             display: flex;
-            flex-direction: column; /* Allows stacking the pasta image and extra images */
+            flex-direction: column; 
             align-items: center;
         }
 
@@ -49,7 +49,7 @@
         }
 
         .extra-images {
-            display: none; /* Initially hidden */
+            display: none; 
             flex-direction: column;
             gap: 10px;
             margin-top: 10px;
@@ -82,7 +82,7 @@
         }
 
         .recipe-info button:hover {
-            background-color: #808080;
+            background-color: #322e2e;
         }
 
         .hidden {
@@ -137,7 +137,7 @@
                 width: 200px;
             }
         }
-        /* Print styles */
+       
         @media print {
             body {
                 background-image: none;
@@ -172,10 +172,40 @@
             }
 
             .image-column img {
-                width: 100%; /* Full width on mobile */
-                max-width: 300px; /* Limit image size */
+                width: 100%; 
+                max-width: 300px; 
             }
         }
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .navigation-buttons button {
+            width: 48%;
+            padding: 10px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .navigation-buttons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .navigation-buttons button:hover:not(:disabled) {
+            background-color: #808080;
+        }
+        .progress-container {
+    margin-top: 10px;
+    height: 20px;
+    width: 70%; 
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    margin: 0 auto; }
+
     </style>
 </head>
 <body>
@@ -227,7 +257,16 @@
                     <div id="progress-bar"></div>
                     
                 </div>
+                <div class="extra-images">
+                    <img src="https://via.placeholder.com/150" alt="Step 1">
+                    <img src="https://via.placeholder.com/150" alt="Step 2">
+                </div>
+    
                
+                <div class="navigation-buttons">
+                    <button id="previous-step" disabled>Previous</button>
+                    <button id="next-step" disabled>Next</button>
+                </div>
             </div>
         </div>
     </div>
@@ -236,64 +275,95 @@
         document.addEventListener('DOMContentLoaded', function () {
             const toggleIngredientsButton = document.getElementById('toggle-ingredients');
             const ingredientsList = document.getElementById('ingredients-list');
-            const extraImages = document.querySelector('.extra-images'); 
+            const extraImages = document.querySelector('.extra-images');
+            const toggleStepsButton = document.getElementById('toggle-steps');
+            const stepsList = document.getElementById('steps-list');
+            const startCookingButton = document.getElementById('start-cooking');
+            const steps = stepsList.querySelectorAll('li');
+            const progressBar = document.getElementById('progress-bar');
+            const previousStepButton = document.getElementById('previous-step');
+            const nextStepButton = document.getElementById('next-step');
+            let currentStep = 0;
 
             toggleIngredientsButton.addEventListener('click', function () {
                 if (ingredientsList.classList.contains('hidden')) {
                     ingredientsList.classList.remove('hidden');
-                    extraImages.style.display = 'flex'; 
+                    extraImages.style.display = 'flex';
                     toggleIngredientsButton.textContent = "Hide Ingredients";
                 } else {
                     ingredientsList.classList.add('hidden');
                     if (!stepsList.classList.contains('hidden')) {
-                        extraImages.style.display = 'flex'; 
+                        extraImages.style.display = 'flex';
                     } else {
-                        extraImages.style.display = 'none'; 
+                        extraImages.style.display = 'none';
                     }
                     toggleIngredientsButton.textContent = "Show Ingredients";
                 }
             });
 
-            const toggleStepsButton = document.getElementById('toggle-steps');
-            const stepsList = document.getElementById('steps-list');
-
             toggleStepsButton.addEventListener('click', function () {
                 if (stepsList.classList.contains('hidden')) {
                     stepsList.classList.remove('hidden');
-                    extraImages.style.display = 'flex'; 
+                    extraImages.style.display = 'flex';
                     toggleStepsButton.textContent = "Hide Steps";
                 } else {
                     stepsList.classList.add('hidden');
-                    if (!ingredientsList.classList.contains('hidden')) { 
-                        extraImages.style.display = 'flex'; 
+                    if (!ingredientsList.classList.contains('hidden')) {
+                        extraImages.style.display = 'flex';
                     } else {
-                        extraImages.style.display = 'none'; 
+                        extraImages.style.display = 'none';
                     }
                     toggleStepsButton.textContent = "Show Steps";
                 }
             });
 
-            
-            const startCookingButton = document.getElementById('start-cooking');
-            const steps = stepsList.querySelectorAll('li');
-            let currentStep = 0;
-
             startCookingButton.addEventListener('click', function () {
-                if (currentStep < steps.length) {
-                    steps[currentStep].style.color = '#808080';
+                if (stepsList.classList.contains('hidden')) {
+                    stepsList.classList.remove('hidden');
+                }
+                steps[currentStep].style.color = '#808080';
+                nextStepButton.disabled = false;
+            });
+
+            nextStepButton.addEventListener('click', function () {
+                if (currentStep < steps.length - 1) {
+                    steps[currentStep].style.color = '#000000'; 
                     currentStep++;
+                    steps[currentStep].style.color = '#808080';
+
+                   
                     const progressPercent = (currentStep / steps.length) * 100;
-                    document.getElementById('progress-bar').style.width = progressPercent + '%';
+                    progressBar.style.width = progressPercent + '%';
+
+                    previousStepButton.disabled = false;
+                }
+
+                if (currentStep === steps.length - 1) {
+                    nextStepButton.disabled = true;
+                }
+            });
+
+            previousStepButton.addEventListener('click', function () {
+                if (currentStep > 0) {
+                    steps[currentStep].style.color = '#000000'; 
+                    currentStep--;
+                    steps[currentStep].style.color = '#808080'; 
+
+                    const progressPercent = (currentStep / steps.length) * 100;
+                    progressBar.style.width = progressPercent + '%';
+
+                    nextStepButton.disabled = false;
+                }
+
+                if (currentStep === 0) {
+                    previousStepButton.disabled = true;
                 }
             });
         });
-        
-        
-          const printRecipeButton = document.getElementById('print-recipe');
+        const printRecipeButton = document.getElementById('print-recipe');
             printRecipeButton.addEventListener('click', function () {
                 window.print();
             });
-    
     </script>
 </body>
 </html>
